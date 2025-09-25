@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر المستقبل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #000000;
+            color: #d1d5db;
+        }
+        .container {
+            max-width: 1280px;
+        }
+        .neon-glow {
+            text-shadow: 0 0 5px #1e90ff, 0 0 10px #1e90ff, 0 0 20px #1e90ff;
+        }
+        .neon-border {
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #1e90ff, #ff00ff) 1;
+            box-shadow: 0 0 10px rgba(30, 144, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        .product-card {
+            background: linear-gradient(145deg, #0f0f1f, #1b1b3b);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInFromBottom 0.5s ease-out forwards;
+        }
+        @keyframes fadeInFromBottom {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #1e90ff;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(30, 144, 255, 0.1);
+            z-index: -1;
+            transition: transform 0.3s ease;
+            transform: scale(0);
+        }
+        .product-card:hover::before {
+            transform: scale(1);
+        }
+        .glow-button {
+            background-image: linear-gradient(90deg, #1e90ff, #ff00ff);
+            box-shadow: 0 0 10px rgba(30, 144, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.8), 0 0 40px rgba(255, 0, 255, 0.8);
+            transform: scale(1.05);
+        }
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background-color: #0f0f1f;
+            border: 2px solid #1e90ff;
+        }
+        .mobile-menu {
+            transition: transform 0.5s cubic-bezier(0.8, 0.2, 0.2, 0.8);
+        }
+        .mobile-menu-active {
+            transform: translateX(0) !important;
+        }
+        #chatBotContainer {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 1000;
+        }
+        #chatBotButton {
+            background: linear-gradient(45deg, #1e90ff, #ff00ff);
+            box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
+            transition: transform 0.3s ease;
+        }
+        #chatBotButton:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        #chatWindow {
+            background: linear-gradient(145deg, #0f0f1f, #1b1b3b);
+            border: 2px solid #1e90ff;
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.5);
+        }
+        .chat-message {
+            max-width: 80%;
+            word-wrap: break-word; /* Ensure long words break */
+            overflow-wrap: break-word; /* Ensure long words break */
+        }
+        .user-message {
+            background-color: #1e90ff;
+            color: #fff;
+            border-top-right-radius: 1rem;
+            border-top-left-radius: 1rem;
+            border-bottom-left-radius: 1rem;
+        }
+        .bot-message {
+            background-color: #ff00ff;
+            color: #fff;
+            border-top-right-radius: 1rem;
+            border-top-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+        }
+        .typing-effect {
+            animation: typing 0.5s steps(20, end) infinite;
+        }
+        @keyframes typing {
+            from {
+                opacity: 0.5;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#000000] text-gray-300 overflow-x-hidden">
+
+    <!-- 3D Canvas for ambient background -->
+    <canvas id="bgCanvas" class="fixed inset-0 w-full h-full z-0 opacity-20"></canvas>
+
+    <!-- Header -->
+    <header class="bg-[#0f0f1f] bg-opacity-80 backdrop-blur-md shadow-2xl py-4 sticky top-0 z-50">
+        <div class="container mx-auto px-6 flex items-center justify-between relative">
+            <div class="md:hidden flex items-center space-x-4 space-x-reverse">
+                <button id="mobileMenuBtn" class="p-2 text-gray-400 hover:text-[#1e90ff] focus:outline-none">
+                    <i class="bi bi-list text-3xl"></i>
+                </button>
+                <button id="cartMobileBtn" class="relative p-2 text-gray-400 hover:text-[#1e90ff] focus:outline-none">
+                    <i class="bi bi-cart text-2xl"></i>
+                    <span id="cartCountMobile" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+            
+            <a href="#" class="text-4xl font-extrabold text-[#1e90ff] neon-glow ml-6">مستقبل</a>
+            <div class="hidden md:flex flex-1 items-center justify-center space-x-8 space-x-reverse">
+                <nav class="flex space-x-6 space-x-reverse text-lg font-medium">
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors neon-glow">الالكترونيات</a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors neon-glow">الأزياء</a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors neon-glow">المنزل</a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors neon-glow">السيارات</a>
+                </nav>
+            </div>
+
+            <div class="hidden md:flex items-center space-x-6 space-x-reverse">
+                <div class="relative w-80">
+                    <input type="text" id="searchInput" placeholder="ابحث عن أي شيء..." class="w-full pl-10 pr-4 py-2 bg-[#1b1b3b] text-white border border-[#363656] rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e90ff]">
+                    <i class="bi bi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                </div>
+                <a href="#" class="text-gray-400 hover:text-[#1e90ff] transition-colors">
+                    <i class="bi bi-person-circle text-2xl"></i>
+                </a>
+                <button id="cartBtn" class="relative text-gray-400 hover:text-[#1e90ff] transition-colors">
+                    <i class="bi bi-cart text-2xl"></i>
+                    <span id="cartCount" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu (Hidden by default) -->
+    <div id="mobileMenu" class="mobile-menu hidden fixed inset-y-0 right-0 z-[100] w-64 bg-[#0f0f1f] p-6 shadow-2xl transform translate-x-full">
+        <button id="closeMobileMenuBtn" class="absolute top-6 left-6 text-gray-400 hover:text-[#1e90ff] focus:outline-none">
+            <i class="bi bi-x-lg text-2xl"></i>
+        </button>
+        <div class="mt-16 space-y-4">
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:text-[#1e90ff] transition-colors">الرئيسية</a>
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:text-[#1e90ff] transition-colors">الالكترونيات</a>
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:text-[#1e90ff] transition-colors">الأزياء</a>
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:hover:text-[#1e90ff] transition-colors">المنزل والحديقة</a>
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:text-[#1e90ff] transition-colors">الرياضة</a>
+            <a href="#" class="block py-2 rounded-md text-lg text-white hover:bg-[#1b1b3b] hover:text-[#1e90ff] transition-colors">السيارات</a>
+        </div>
+    </div>
+    
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal fixed inset-0 z-[101] flex justify-center items-center p-4">
+        <div class="modal-content p-8 rounded-2xl shadow-2xl max-w-2xl w-full text-center">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-[#1e90ff] neon-glow mb-4">أهلاً بك في متجر المستقبل!</h2>
+            <p class="text-lg text-gray-400 leading-relaxed mb-6">هذا المتجر مصمم ليعكس المستقبل. إليك دليل سريع لكيفية التفاعل معه:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
+                <div class="bg-[#1b1b3b] p-4 rounded-xl">
+                    <i class="bi bi-cursor-fill text-3xl text-[#ff00ff] mb-2"></i>
+                    <p class="font-bold text-white mb-1">تصفح المنتجات</p>
+                    <p class="text-gray-400 text-sm">اضغط على أي منتج لعرض تفاصيله الكاملة في نافذة منبثقة أنيقة.</p>
+                </div>
+                <div class="bg-[#1b1b3b] p-4 rounded-xl">
+                    <i class="bi bi-cart-plus-fill text-3xl text-[#1e90ff] mb-2"></i>
+                    <p class="font-bold text-white mb-1">أضف للسلة</p>
+                    <p class="text-gray-400 text-sm">استخدم زر "أضف إلى السلة" لإضافة المنتج. سيظهر إشعار يؤكد العملية.</p>
+                </div>
+                <div class="bg-[#1b1b3b] p-4 rounded-xl">
+                    <i class="bi bi-basket-fill text-3xl text-[#ff00ff] mb-2"></i>
+                    <p class="font-bold text-white mb-1">تحقق من السلة</p>
+                    <p class="text-gray-400 text-sm">انقر على أيقونة السلة في الأعلى لعرض محتوياتها وحذف المنتجات.</p>
+                </div>
+                <div class="bg-[#1b1b3b] p-4 rounded-xl">
+                    <i class="bi bi-list-nested text-3xl text-[#1e90ff] mb-2"></i>
+                    <p class="font-bold text-white mb-1">قائمة الجوال</p>
+                    <p class="text-gray-400 text-sm">على الجوال، انقر على أيقونة القائمة للوصول إلى التصنيفات والمزيد.</p>
+                </div>
+            </div>
+            <button id="closeWelcomeModalBtn" class="glow-button px-8 py-3 font-bold rounded-full mt-8">لنبدأ التسوق</button>
+        </div>
+    </div>
+    
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal hidden fixed inset-0 z-[100] flex justify-center items-center">
+        <div class="modal-content p-8 rounded-2xl shadow-2xl max-w-lg w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-white neon-glow">سلة التسوق</h2>
+                <button id="closeCartModalBtn" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="bi bi-x-lg text-2xl"></i>
+                </button>
+            </div>
+            <div id="cartItems" class="space-y-6">
+                <p class="text-center text-gray-500" id="emptyCartMessage">السلة فارغة</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div id="productModal" class="modal hidden fixed inset-0 z-[100] flex justify-center items-center p-4">
+        <div class="modal-content rounded-2xl shadow-2xl w-full max-w-4xl p-8 flex flex-col md:flex-row gap-8">
+            <button id="closeProductModalBtn" class="absolute top-4 left-4 text-gray-400 hover:text-white transition-colors">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+            <div class="flex-1">
+                <div id="product-image-container" class="relative w-full h-80 md:h-96 bg-[#1b1b3b] rounded-xl overflow-hidden mb-4">
+                    <img id="product-main-image" src="" alt="Product Image" class="w-full h-full object-contain">
+                </div>
+                <div id="product-thumbnails" class="flex justify-center gap-4">
+                </div>
+            </div>
+            <div class="flex-1 flex flex-col justify-between">
+                <div>
+                    <h3 id="product-title" class="text-3xl md:text-4xl font-extrabold text-[#ff00ff] neon-glow mb-2"></h3>
+                    <div class="flex items-center space-x-1 space-x-reverse mb-2 text-yellow-400">
+                        <span id="product-rating"></span>
+                    </div>
+                    <p id="product-price" class="text-4xl font-extrabold text-[#1e90ff] mb-4"></p>
+                    <p id="product-description" class="text-gray-400 text-lg leading-relaxed mb-6"></p>
+                    <div class="space-y-2 text-gray-500 text-sm">
+                        <p id="product-category"></p>
+                        <p id="product-shipping"></p>
+                    </div>
+                </div>
+                <button id="addToCartBtn" class="w-full glow-button text-white font-bold py-4 rounded-xl mt-6">
+                    <i class="bi bi-cart-plus-fill ml-2"></i>أضف إلى السلة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-10 relative z-10">
+        <!-- Hero Banner -->
+        <div class="neon-border rounded-2xl p-8 mb-12 shadow-2xl flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
+            <div class="relative z-10 text-center md:text-right">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-2 text-white neon-glow">عروض المستقبل وصلت!</h1>
+                <p class="text-lg text-gray-400">اكتشف أحدث المنتجات المصممة للمستقبل.</p>
+            </div>
+            <button class="relative z-10 mt-6 md:mt-0 px-8 py-3 glow-button text-white font-bold rounded-full">تسوق الآن</button>
+        </div>
+
+        <!-- Filters & Sort -->
+        <section class="mb-10 flex flex-col md:flex-row items-center justify-between">
+            <h2 class="text-3xl font-bold mb-4 md:mb-0 text-white neon-glow">منتجات مميزة</h2>
+            <div class="flex items-center space-x-4 space-x-reverse w-full md:w-auto justify-end">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <label for="priceFilter" class="text-gray-400">السعر:</label>
+                    <select id="priceFilter" class="bg-[#1b1b3b] border border-[#363656] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e90ff]">
+                        <option value="all">الكل</option>
+                        <option value="low">من الأقل للأعلى</option>
+                        <option value="high">من الأعلى للأقل</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <label for="ratingFilter" class="text-gray-400">التقييم:</label>
+                    <select id="ratingFilter" class="bg-[#1b1b3b] border border-[#363656] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e90ff]">
+                        <option value="all">الكل</option>
+                        <option value="4.5">4.5+ نجوم</option>
+                        <option value="4">4+ نجوم</option>
+                        <option value="3">3+ نجوم</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Listings -->
+        <section>
+            <div id="productGrid" class="grid-view">
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f0f1f] text-gray-400 py-12 mt-20 relative z-10">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 text-right">
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white neon-glow">المتجر</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">من نحن</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">الوظائف</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">الأخبار</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white neon-glow">الدعم</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">المساعدة</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">الشحن والتوصيل</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">اتصل بنا</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white neon-glow">التسوق</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">أفضل العروض</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">منتجات جديدة</a></li>
+                    <li><a href="#" class="hover:text-[#1e90ff] transition-colors">منتجات حصرية</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white neon-glow">تابعنا</h4>
+                <div class="flex space-x-4 space-x-reverse text-gray-500">
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors"><i class="bi bi-instagram text-2xl"></i></a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors"><i class="bi bi-twitter text-2xl"></i></a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors"><i class="bi bi-facebook text-2xl"></i></a>
+                    <a href="#" class="hover:text-[#1e90ff] transition-colors"><i class="bi bi-youtube text-2xl"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="mt-12 text-center text-sm text-gray-600">
+            &copy; 2024 متجر المستقبل. جميع الحقوق محفوظة.
+        </div>
+    </footer>
+
+    <!-- Chat Bot Container -->
+    <div id="chatBotContainer" class="fixed bottom-8 left-8 z-[1000]">
+        <button id="chatBotButton" class="w-16 h-16 rounded-full text-white flex items-center justify-center text-3xl shadow-lg">
+            <i class="bi bi-robot"></i>
+        </button>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal hidden fixed inset-0 z-[1000] flex justify-center items-center p-4">
+        <div id="chatWindow" class="modal-content w-full max-w-sm h-3/4 md:h-2/3 flex flex-col p-4 rounded-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-white neon-glow">مساعد المستقبل</h3>
+                <button id="closeChatModal" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="bi bi-x-lg text-2xl"></i>
+                </button>
+            </div>
+            <div id="chatMessages" class="flex-1 overflow-y-auto space-y-4 mb-4">
+                <div class="bot-message p-3 rounded-lg self-start chat-message text-right">
+                    أهلاً بك! كيف يمكنني مساعدتك اليوم؟
+                </div>
+            </div>
+            <div id="chatOptions" class="grid grid-cols-1 gap-2">
+                <button class="chat-option-btn w-full text-right p-2 rounded-xl text-sm bg-gray-700 text-gray-300 hover:bg-[#1e90ff] transition-colors">كيف يمكنني إضافة منتج إلى السلة؟</button>
+                <button class="chat-option-btn w-full text-right p-2 rounded-xl text-sm bg-gray-700 text-gray-300 hover:bg-[#1e90ff] transition-colors">هل يوجد شحن مجاني؟</button>
+                <button class="chat-option-btn w-full text-right p-2 rounded-xl text-sm bg-gray-700 text-gray-300 hover:bg-[#1e90ff] transition-colors">ما هي طرق الدفع المتاحة؟</button>
+                <button class="chat-option-btn w-full text-right p-2 rounded-xl text-sm bg-gray-700 text-gray-300 hover:bg-[#1e90ff] transition-colors">أين يمكنني رؤية حالة طلبي؟</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        window.onload = function() {
+            // Three.js 3D Background
+            let scene, camera, renderer, particles;
+            const bgCanvas = document.getElementById('bgCanvas');
+            let mouseX = 0, mouseY = 0;
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            function init3D() {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 100;
+
+                renderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setClearColor(0x000000, 0);
+
+                const geometry = new THREE.BufferGeometry();
+                const vertices = [];
+                for (let i = 0; i < 5000; i++) {
+                    vertices.push(Math.random() * 2000 - 1000);
+                    vertices.push(Math.random() * 2000 - 1000);
+                    vertices.push(Math.random() * 2000 - 1000);
+                }
+                geometry.setAttribute('position', new THREE.Float32Array(vertices, 3));
+
+                const material = new THREE.PointsMaterial({ color: 0x1e90ff, size: 2, transparent: true, opacity: 0.5 });
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function onDocumentMouseMove(event) {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            }
+
+            function animate3D() {
+                requestAnimationFrame(animate3D);
+
+                camera.position.x += (mouseX / 10 - camera.position.x) * .05;
+                camera.position.y += (-mouseY / 10 - camera.position.y) * .05;
+                camera.lookAt(scene.position);
+
+                particles.rotation.y += 0.0005;
+                particles.rotation.x += 0.0002;
+                particles.rotation.z += 0.0001;
+
+                renderer.render(scene, camera);
+            }
+
+            try {
+                init3D();
+                animate3D();
+            } catch (e) {
+                console.error("3D rendering failed:", e);
+                bgCanvas.style.display = 'none';
+            }
+
+            // --- JQuery for site functionality ---
+            
+            // Sample product data
+            const products = [
+                {
+                    id: 1,
+                    name: 'هاتف ذكي "الجيل القادم"',
+                    price: '2,999 ريال',
+                    image: 'https://placehold.co/600x600/1e90ff/000000?text=Phone+1',
+                    images: ['https://placehold.co/600x600/1e90ff/000000?text=Phone+1', 'https://placehold.co/600x600/ff00ff/000000?text=Phone+Side', 'https://placehold.co/600x600/ff00ff/000000?text=Phone+Back'],
+                    category: 'الكترونيات',
+                    description: 'هاتف ذكي بتقنية الواقع المعزز، مع شاشة مرنة مقاومة للخدوش ومعالج كمومي فائق السرعة.',
+                    rating: 4.8,
+                    views: 5200,
+                    shipping: 'شحن من المريخ',
+                    sortPrice: 2999
+                },
+                {
+                    id: 2,
+                    name: 'ساعة ذكية "الزمن"',
+                    price: '850 ريال',
+                    image: 'https://placehold.co/600x600/ff00ff/000000?text=Watch',
+                    images: ['https://placehold.co/600x600/ff00ff/000000?text=Watch', 'https://placehold.co/600x600/1e90ff/000000?text=Watch+Back'],
+                    category: 'الكترونيات',
+                    description: 'ساعة يد فاخرة بتصميم مستقبلي، تتبع حالتك الصحية بدقة بالغة وتعمل بالطاقة الشمسية.',
+                    rating: 5,
+                    views: 3100,
+                    shipping: 'شحن من الفضاء',
+                    sortPrice: 850
+                },
+                {
+                    id: 3,
+                    name: 'حذاء "الطيران"',
+                    price: '1,200 ريال',
+                    image: 'https://placehold.co/600x600/1e90ff/000000?text=Shoes',
+                    images: ['https://placehold.co/600x600/1e90ff/000000?text=Shoes', 'https://placehold.co/600x600/ff00ff/000000?text=Shoes+Side'],
+                    category: 'أزياء',
+                    description: 'حذاء رياضي بتقنية الارتداد المغناطيسي لتسهيل الحركة، مصمم للمشي لمسافات طويلة دون تعب.',
+                    rating: 4.5,
+                    views: 8900,
+                    shipping: 'شحن من اليابان',
+                    sortPrice: 1200
+                },
+                {
+                    id: 4,
+                    name: 'نظارات "الواقع الافتراضي"',
+                    price: '1,500 ريال',
+                    image: 'https://placehold.co/600x600/ff00ff/000000?text=VR+Glasses',
+                    images: ['https://placehold.co/600x600/ff00ff/000000?text=VR+Glasses', 'https://placehold.co/600x600/1e90ff/000000?text=VR+Glasses+Side'],
+                    category: 'الكترونيات',
+                    description: 'نظارات متطورة للواقع الافتراضي تمنحك تجربة غامرة لا مثيل لها.',
+                    rating: 4.2,
+                    views: 4500,
+                    shipping: 'شحن من أمريكا',
+                    sortPrice: 1500
+                },
+                {
+                    id: 5,
+                    name: 'جاكيت "التغير الحراري"',
+                    price: '950 ريال',
+                    image: 'https://placehold.co/600x600/1e90ff/000000?text=Jacket',
+                    images: ['https://placehold.co/600x600/1e90ff/000000?text=Jacket', 'https://placehold.co/600x600/ff00ff/000000?text=Jacket+Back'],
+                    category: 'أزياء',
+                    description: 'جاكيت ذكي يتكيف مع درجة حرارة جسمك تلقائياً ليوفر لك الراحة في كل الأجواء.',
+                    rating: 4.9,
+                    views: 6300,
+                    shipping: 'شحن من ألمانيا',
+                    sortPrice: 950
+                },
+                {
+                    id: 6,
+                    name: 'طائرة درون "السرعة"',
+                    price: '3,500 ريال',
+                    image: 'https://placehold.co/600x600/ff00ff/000000?text=Drone',
+                    images: ['https://placehold.co/600x600/ff00ff/000000?text=Drone', 'https://placehold.co/600x600/1e90ff/000000?text=Drone+Flying'],
+                    category: 'الكترونيات',
+                    description: 'طائرة بدون طيار بتصميم انسيابي وسرعة فائقة، مثالية للمصورين المحترفين.',
+                    rating: 4.7,
+                    views: 7800,
+                    shipping: 'شحن دولي',
+                    sortPrice: 3500
+                }
+            ];
+
+            let cartItems = [];
+
+            function getRatingStars(rating) {
+                const fullStars = Math.floor(rating);
+                const halfStar = rating % 1 !== 0;
+                let starsHtml = '';
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += `<i class="bi bi-star-fill text-yellow-400"></i>`;
+                }
+                if (halfStar) {
+                    starsHtml += `<i class="bi bi-star-half text-yellow-400"></i>`;
+                }
+                const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                for (let i = 0; i < emptyStars; i++) {
+                    starsHtml += `<i class="bi bi-star text-yellow-400"></i>`;
+                }
+                return starsHtml;
+            }
+
+            function renderProducts(filteredProducts) {
+                const productGrid = $('#productGrid');
+                productGrid.empty();
+
+                filteredProducts.forEach((product, index) => {
+                    const cardHtml = `
+                        <div class="product-card p-6 rounded-2xl shadow-xl flex-none relative group transition-all duration-300" style="animation-delay: ${index * 0.1}s;" data-id="${product.id}">
+                            <div class="relative w-full h-48 mb-4">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain rounded-lg transition-all duration-300">
+                            </div>
+                            <h3 class="font-bold text-lg text-white mb-2">${product.name}</h3>
+                            <div class="flex items-center space-x-1 space-x-reverse text-sm mb-2 text-gray-400">
+                                ${getRatingStars(product.rating)}
+                                <span class="mr-1 text-gray-500">${product.rating}</span>
+                            </div>
+                            <p class="font-extrabold text-2xl text-[#1e90ff] mb-4">${product.price}</p>
+                            <button class="view-product-btn w-full glow-button text-white font-bold py-3 rounded-lg" data-id="${product.id}">
+                                <i class="bi bi-eye-fill ml-2"></i>عرض التفاصيل
+                            </button>
+                            <button class="add-to-cart-btn-grid w-full glow-button text-white font-bold py-3 rounded-lg mt-2" data-id="${product.id}">
+                                <i class="bi bi-cart-plus-fill ml-2"></i>أضف إلى السلة
+                            </button>
+                        </div>
+                    `;
+                    productGrid.append(cardHtml);
+                });
+            }
+
+            function updateCartUI() {
+                const cartItemsContainer = $('#cartItems');
+                cartItemsContainer.empty();
+                if (cartItems.length === 0) {
+                    $('#emptyCartMessage').show();
+                } else {
+                    $('#emptyCartMessage').hide();
+                    cartItems.forEach(item => {
+                        const cartItemHtml = `
+                            <div class="flex items-center justify-between p-4 bg-[#1b1b3b] rounded-xl border border-[#363656] last:border-b-0">
+                                <div class="flex items-center space-x-4 space-x-reverse">
+                                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-contain">
+                                    <div>
+                                        <h4 class="font-bold text-white">${item.name}</h4>
+                                        <p class="text-gray-400">${item.price}</p>
+                                    </div>
+                                </div>
+                                <button class="remove-from-cart-btn text-red-500 hover:text-red-300 transition-colors" data-id="${item.id}">
+                                    <i class="bi bi-x-circle-fill text-2xl"></i>
+                                </button>
+                            </div>
+                        `;
+                        cartItemsContainer.append(cartItemHtml);
+                    });
+                }
+                $('#cartCount, #cartCountMobile').text(cartItems.length);
+            }
+
+            function applyFilters() {
+                let filteredProducts = [...products];
+
+                const searchTerm = $('#searchInput').val().toLowerCase();
+                if (searchTerm) {
+                    filteredProducts = filteredProducts.filter(p =>
+                        p.name.toLowerCase().includes(searchTerm) ||
+                        p.category.toLowerCase().includes(searchTerm) ||
+                        p.description.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                const priceSort = $('#priceFilter').val();
+                if (priceSort === 'low') {
+                    filteredProducts.sort((a, b) => a.sortPrice - b.sortPrice);
+                } else if (priceSort === 'high') {
+                    filteredProducts.sort((a, b) => b.sortPrice - a.sortPrice);
+                }
+
+                const ratingFilter = parseFloat($('#ratingFilter').val());
+                if (ratingFilter !== 'all' && !isNaN(ratingFilter)) {
+                    filteredProducts = filteredProducts.filter(p => p.rating >= ratingFilter);
+                }
+
+                renderProducts(filteredProducts);
+            }
+
+            // Chat Bot Functionality
+            const chatAnswers = {
+                'كيف يمكنني إضافة منتج إلى السلة؟': 'لإضافة منتج، فقط اضغط على زر "أضف إلى السلة" الموجود أسفل كل منتج أو في صفحة التفاصيل.',
+                'هل يوجد شحن مجاني؟': 'نعم، نوفر خدمة الشحن المجاني للطلبات التي تزيد قيمتها عن 500 ريال.',
+                'ما هي طرق الدفع المتاحة؟': 'يمكنك الدفع باستخدام بطاقات الائتمان، PayPal، أو Apple Pay. كما نوفر خيار الدفع بالعملات الرقمية قريباً.',
+                'أين يمكنني رؤية حالة طلبي؟': 'يمكنك تتبع حالة طلبك عن طريق الذهاب إلى صفحة "طلباتي" في حسابك بعد تسجيل الدخول.',
+                'هل يمكنني استبدال منتج؟': 'نعم، يمكنك استبدال أي منتج خلال 14 يوماً من تاريخ الشراء بشرط أن يكون بحالته الأصلية.'
+            };
+
+            function typeWriterEffect(element, text) {
+                let i = 0;
+                const typingInterval = 50;
+                element.html('');
+                const type = () => {
+                    if (i < text.length) {
+                        element.append(text.charAt(i));
+                        i++;
+                        setTimeout(type, typingInterval);
+                    }
+                };
+                type();
+            }
+
+            function addBotMessage(text) {
+                const messagesContainer = $('#chatMessages');
+                const messageHtml = `<div class="bot-message p-3 rounded-lg self-start chat-message text-right"></div>`;
+                messagesContainer.append(messageHtml);
+                const newMessage = messagesContainer.children().last();
+                typeWriterEffect(newMessage, text);
+                messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
+            }
+
+            $('#chatBotButton').on('click', function() {
+                $('#chatModal').removeClass('hidden').addClass('flex');
+            });
+
+            $('#closeChatModal').on('click', function() {
+                $('#chatModal').removeClass('flex').addClass('hidden');
+            });
+            
+            $('.chat-option-btn').on('click', function() {
+                const userMessageText = $(this).text();
+                const messagesContainer = $('#chatMessages');
+                messagesContainer.append(`<div class="user-message p-3 rounded-lg self-end chat-message">${userMessageText}</div>`);
+                messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
+
+                setTimeout(() => {
+                    const botResponse = chatAnswers[userMessageText];
+                    if (botResponse) {
+                        addBotMessage(botResponse);
+                    } else {
+                        addBotMessage('آسف، لا أفهم هذا السؤال حالياً. يمكنك تجربة سؤال آخر!');
+                    }
+                }, 1000);
+            });
+
+            // Show welcome modal on first load
+            if (!localStorage.getItem('visited')) {
+                $('#welcomeModal').removeClass('hidden').addClass('flex');
+                localStorage.setItem('visited', 'true');
+            } else {
+                renderProducts(products);
+            }
+
+            // Event Listeners
+            $('#closeWelcomeModalBtn').on('click', function() {
+                $('#welcomeModal').removeClass('flex').addClass('hidden');
+                renderProducts(products); // Render products after closing the modal
+            });
+            
+            $('#searchInput, #priceFilter, #ratingFilter').on('change keyup', applyFilters);
+
+            $(document).on('click', '.add-to-cart-btn-grid, #addToCartBtn', function() {
+                const productId = $(this).data('id');
+                const productToAdd = products.find(p => p.id === productId);
+                if (productToAdd && !cartItems.some(p => p.id === productId)) {
+                    cartItems.push(productToAdd);
+                    updateCartUI();
+                    // Show notification
+                    const notification = $(`<div class="fixed top-20 right-4 p-4 rounded-lg bg-green-500 text-white shadow-xl z-[1000] animate-pulse">
+                        <i class="bi bi-check-circle-fill ml-2"></i>تم إضافة المنتج للسلة!
+                    </div>`);
+                    $('body').append(notification);
+                    setTimeout(() => {
+                        notification.fadeOut('slow', function() {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                }
+            });
+
+            $(document).on('click', '.remove-from-cart-btn', function() {
+                const productId = $(this).data('id');
+                cartItems = cartItems.filter(item => item.id !== productId);
+                updateCartUI();
+            });
+
+            $(document).on('click', '.view-product-btn', function() {
+                const productId = $(this).data('id');
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    $('#product-title').text(product.name);
+                    $('#product-price').text(product.price);
+                    $('#product-description').text(product.description);
+                    $('#product-rating').html(getRatingStars(product.rating));
+                    $('#product-category').html(`<i class="bi bi-tag-fill ml-1"></i>${product.category}`);
+                    $('#product-shipping').html(`<i class="bi bi-truck ml-1"></i>${product.shipping}`);
+                    $('#addToCartBtn').data('id', product.id);
+                    
+                    $('#product-main-image').attr('src', product.images[0]);
+                    const thumbnailsContainer = $('#product-thumbnails');
+                    thumbnailsContainer.empty();
+                    product.images.forEach((img, index) => {
+                        thumbnailsContainer.append(`
+                            <img src="${img}" alt="Thumbnail ${index + 1}" class="w-20 h-20 rounded-lg object-contain cursor-pointer border-2 border-transparent hover:border-[#1e90ff] transition" data-img-index="${index}">
+                        `);
+                    });
+
+                    $('#productModal').removeClass('hidden').addClass('flex');
+                }
+            });
+
+            $(document).on('click', '#product-thumbnails img', function() {
+                const imgIndex = $(this).data('img-index');
+                const productId = $('#addToCartBtn').data('id');
+                const product = products.find(p => p.id === productId);
+                if (product && product.images[imgIndex]) {
+                    $('#product-main-image').attr('src', product.images[imgIndex]);
+                }
+            });
+
+            $('#cartBtn, #cartMobileBtn').on('click', function() {
+                $('#cartModal').removeClass('hidden').addClass('flex');
+            });
+
+            $('#closeCartModalBtn').on('click', function() {
+                $('#cartModal').removeClass('flex').addClass('hidden');
+            });
+            
+            $('#closeProductModalBtn').on('click', function() {
+                $('#productModal').removeClass('flex').addClass('hidden');
+            });
+
+            $('#mobileMenuBtn').on('click', function() {
+                $('#mobileMenu').removeClass('hidden').addClass('flex');
+                setTimeout(() => {
+                    $('#mobileMenu').addClass('mobile-menu-active');
+                }, 10);
+            });
+
+            $('#closeMobileMenuBtn').on('click', function() {
+                $('#mobileMenu').removeClass('mobile-menu-active');
+                setTimeout(() => {
+                    $('#mobileMenu').addClass('hidden').removeClass('flex');
+                }, 500);
+            });
+
+            // This line ensures products are rendered immediately on page load
+            renderProducts(products); 
+        };
+    </script>
+</body>
+</html>

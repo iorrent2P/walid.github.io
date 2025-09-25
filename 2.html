@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر إلكتروني</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f7f7f7;
+            text-align: right;
+        }
+        .container {
+            max-width: 1280px;
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        /* Mobile menu */
+        .mobile-menu-open {
+            display: flex;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Mobile Menu and Cart for small screens -->
+            <div class="md:hidden flex items-center space-x-2 space-x-reverse">
+                <button id="mobileMenuBtn" class="p-2 text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <i class="bi bi-list text-2xl"></i>
+                </button>
+                <button id="cartMobileBtn" class="relative p-2 text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <i class="bi bi-cart text-2xl"></i>
+                    <span id="cartCountMobile" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+            
+            <!-- Logo and Search -->
+            <div class="flex items-center w-full md:w-auto mb-4 md:mb-0">
+                <a href="#" class="text-3xl font-bold text-blue-600 ml-4">متجري</a>
+                <div class="relative w-full md:w-96">
+                    <input type="text" id="searchInput" placeholder="ابحث عن أي شيء..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="bi bi-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <!-- User Actions -->
+            <div class="hidden md:flex items-center space-x-4 space-x-reverse">
+                <a href="#" class="text-gray-600 hover:text-blue-600">
+                    <i class="bi bi-person-circle text-2xl"></i>
+                </a>
+                <button id="cartBtn" class="relative text-gray-600 hover:text-blue-600">
+                    <i class="bi bi-cart text-2xl"></i>
+                    <span id="cartCount" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sub-navigation -->
+        <nav id="mainNav" class="bg-gray-200 text-gray-700 hidden md:block">
+            <div class="container mx-auto px-4 py-2 flex justify-center space-x-6 space-x-reverse">
+                <a href="#" class="hover:text-blue-600 font-medium">الالكترونيات</a>
+                <a href="#" class="hover:text-blue-600 font-medium">الأزياء</a>
+                <a href="#" class="hover:text-blue-600 font-medium">المنزل والحديقة</a>
+                <a href="#" class="hover:text-blue-600 font-medium">الرياضة</a>
+                <a href="#" class="hover:text-blue-600 font-medium">السيارات</a>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobileMenu" class="mobile-menu hidden bg-white shadow-lg w-64 fixed inset-y-0 right-0 z-50 flex-col py-4 px-6 md:hidden transition-transform transform translate-x-full">
+            <button id="closeMobileMenuBtn" class="absolute top-4 left-4 text-gray-600 hover:text-blue-600 focus:outline-none">
+                <i class="bi bi-x-lg text-2xl"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-4">القائمة</h3>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">الرئيسية</a>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">الالكترونيات</a>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">الأزياء</a>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">المنزل والحديقة</a>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">الرياضة</a>
+            <a href="#" class="block py-2 text-gray-800 hover:bg-gray-100 rounded-md">السيارات</a>
+            <a href="#" class="block py-2 mt-4 text-gray-800 hover:bg-gray-100 rounded-md border-t pt-4">حسابي</a>
+        </div>
+        
+    </header>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">سلة التسوق</h2>
+                <button id="closeCartModalBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="bi bi-x-lg text-2xl"></i>
+                </button>
+            </div>
+            <div id="cartItems" class="space-y-4">
+                <!-- Cart items will be added here -->
+                <p class="text-center text-gray-500" id="emptyCartMessage">السلة فارغة</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Banner -->
+        <div class="bg-blue-600 text-white rounded-xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">عروض اليوم المذهلة!</h1>
+                <p class="text-lg">اكتشف منتجات رائعة بأسعار لا تُصدق.</p>
+            </div>
+            <button class="mt-4 md:mt-0 px-6 py-3 bg-white text-blue-600 font-bold rounded-full hover:bg-gray-200 transition">تسوق الآن</button>
+        </div>
+
+        <!-- Browse by Categories -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-right">تصفح حسب الفئات</h2>
+            <div class="flex overflow-x-auto space-x-6 space-x-reverse pb-4" style="-webkit-overflow-scrolling: touch;">
+                <!-- Category Item -->
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-phone-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">الالكترونيات</span>
+                </div>
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-car-front-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">السيارات</span>
+                </div>
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-archive-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">التحف</span>
+                </div>
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-bag-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">الأزياء</span>
+                </div>
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-heart-pulse-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">الصحة والجمال</span>
+                </div>
+                <div class="flex-none w-24 text-center">
+                    <div class="w-20 h-20 rounded-full bg-white border border-gray-300 mx-auto flex items-center justify-center mb-2">
+                        <i class="bi bi-house-fill text-4xl text-gray-600"></i>
+                    </div>
+                    <span class="text-sm text-gray-700">المنزل والحديقة</span>
+                </div>
+                <!-- Add more categories here -->
+            </div>
+        </section>
+
+        <!-- Product Listings -->
+        <section>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold">منتجات مميزة</h2>
+            </div>
+            <div id="productGrid" class="grid-view">
+                <!-- Product cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-12">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-right">
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white">المتجر</h4>
+                <ul>
+                    <li><a href="#" class="hover:underline">نبذة عنا</a></li>
+                    <li><a href="#" class="hover:underline">الوظائف</a></li>
+                    <li><a href="#" class="hover:underline">الأخبار</a></li>
+                    <li><a href="#" class="hover:underline">علاقات المستثمرين</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white">خدمة العملاء</h4>
+                <ul>
+                    <li><a href="#" class="hover:underline">المساعدة</a></li>
+                    <li><a href="#" class="hover:underline">التوصيل</a></li>
+                    <li><a href="#" class="hover:underline">الاستبدال والإرجاع</a></li>
+                    <li><a href="#" class="hover:underline">اتصل بنا</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white">التسوق</h4>
+                <ul>
+                    <li><a href="#" class="hover:underline">تخفيضات</a></li>
+                    <li><a href="#" class="hover:underline">المنتجات الجديدة</a></li>
+                    <li><a href="#" class="hover:underline">أفضل العروض</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-lg mb-4 text-white">تابعنا</h4>
+                <div class="flex space-x-4 space-x-reverse text-gray-400">
+                    <a href="#" class="hover:text-white"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="hover:text-white"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="hover:text-white"><i class="bi bi-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 text-center text-sm text-gray-500">
+            &copy; 2024 متجر. جميع الحقوق محفوظة.
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Sample product data
+            const products = [
+                {
+                    id: 1,
+                    name: 'هاتف ذكي حديث',
+                    price: '2,999 ريال',
+                    image: 'https://placehold.co/400x400/FF5733/FFFFFF?text=Product+1',
+                    category: 'الكترونيات',
+                    rating: 4.5,
+                    views: 1250,
+                    shipping: 'شحن من الصين'
+                },
+                {
+                    id: 2,
+                    name: 'ساعة يد فاخرة',
+                    price: '850 ريال',
+                    image: 'https://placehold.co/400x400/33FF57/FFFFFF?text=Product+2',
+                    category: 'أزياء',
+                    rating: 5,
+                    views: 890,
+                    shipping: 'شحن من إيطاليا'
+                },
+                {
+                    id: 3,
+                    name: 'حذاء رياضي أنيق',
+                    price: '350 ريال',
+                    image: 'https://placehold.co/400x400/3357FF/FFFFFF?text=Product+3',
+                    category: 'أزياء',
+                    rating: 4,
+                    views: 2300,
+                    shipping: 'شحن من أمريكا'
+                },
+                {
+                    id: 4,
+                    name: 'مجموعة أدوات المطبخ',
+                    price: '600 ريال',
+                    image: 'https://placehold.co/400x400/F0FF33/000000?text=Product+4',
+                    category: 'المنزل',
+                    rating: 4.2,
+                    views: 550,
+                    shipping: 'شحن محلي'
+                },
+                {
+                    id: 5,
+                    name: 'نظارات شمسية عصرية',
+                    price: '250 ريال',
+                    image: 'https://placehold.co/400x400/8A2BE2/FFFFFF?text=Product+5',
+                    category: 'أزياء',
+                    rating: 4.8,
+                    views: 180,
+                    shipping: 'شحن من فرنسا'
+                },
+                {
+                    id: 6,
+                    name: 'كاميرا احترافية',
+                    price: '5,500 ريال',
+                    image: 'https://placehold.co/400x400/DAA520/000000?text=Product+6',
+                    category: 'الكترونيات',
+                    rating: 4.9,
+                    views: 3100,
+                    shipping: 'شحن دولي'
+                }
+            ];
+
+            let cartItems = [];
+
+            // Function to render stars for rating
+            function getRatingStars(rating) {
+                const fullStars = Math.floor(rating);
+                const halfStar = rating % 1 !== 0;
+                let starsHtml = '';
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += `<i class="bi bi-star-fill text-yellow-400"></i>`;
+                }
+                if (halfStar) {
+                    starsHtml += `<i class="bi bi-star-half text-yellow-400"></i>`;
+                }
+                const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                for (let i = 0; i < emptyStars; i++) {
+                    starsHtml += `<i class="bi bi-star text-yellow-400"></i>`;
+                }
+                return starsHtml;
+            }
+
+            // Function to render products (now only for grid view)
+            function renderProducts(filteredProducts) {
+                const productGrid = $('#productGrid');
+                productGrid.empty();
+
+                filteredProducts.forEach(product => {
+                    const cardHtml = `
+                        <div class="product-card bg-white p-4 rounded-xl shadow-md flex-none">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-contain rounded-lg mb-4">
+                            <h3 class="font-semibold text-lg text-gray-800">${product.name}</h3>
+                            <div class="flex items-center space-x-1 space-x-reverse text-sm text-gray-600 mb-2">
+                                ${getRatingStars(product.rating)}
+                                <span class="mr-1 text-gray-500">${product.rating}</span>
+                            </div>
+                            <p class="font-bold text-xl text-blue-600 mb-4">${product.price}</p>
+                            <button class="add-to-cart-btn w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition" data-id="${product.id}">
+                                <i class="bi bi-cart-plus-fill ml-2"></i>أضف إلى السلة
+                            </button>
+                        </div>
+                    `;
+                    productGrid.append(cardHtml);
+                });
+            }
+
+            // Function to update cart UI
+            function updateCartUI() {
+                const cartItemsContainer = $('#cartItems');
+                cartItemsContainer.empty();
+                if (cartItems.length === 0) {
+                    $('#emptyCartMessage').show();
+                } else {
+                    $('#emptyCartMessage').hide();
+                    cartItems.forEach(item => {
+                        const cartItemHtml = `
+                            <div class="flex items-center justify-between border-b pb-4 last:border-b-0">
+                                <div class="flex items-center space-x-4 space-x-reverse">
+                                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-contain">
+                                    <div>
+                                        <h4 class="font-bold">${item.name}</h4>
+                                        <p class="text-gray-600">${item.price}</p>
+                                    </div>
+                                </div>
+                                <button class="remove-from-cart-btn text-red-500 hover:text-red-700" data-id="${item.id}">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                </button>
+                            </div>
+                        `;
+                        cartItemsContainer.append(cartItemHtml);
+                    });
+                }
+                $('#cartCount, #cartCountMobile').text(cartItems.length);
+            }
+
+            // Initial render
+            renderProducts(products);
+
+            // Search functionality
+            $('#searchInput').on('keyup', function() {
+                const searchTerm = $(this).val().toLowerCase();
+                const filtered = products.filter(product =>
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm)
+                );
+                renderProducts(filtered);
+            });
+
+            // Add to cart functionality
+            $(document).on('click', '.add-to-cart-btn', function() {
+                const productId = $(this).data('id');
+                const productToAdd = products.find(p => p.id === productId);
+                if (productToAdd && !cartItems.some(p => p.id === productId)) {
+                    cartItems.push(productToAdd);
+                    updateCartUI();
+                }
+            });
+
+            // Remove from cart functionality
+            $(document).on('click', '.remove-from-cart-btn', function() {
+                const productId = $(this).data('id');
+                cartItems = cartItems.filter(item => item.id !== productId);
+                updateCartUI();
+            });
+
+            // Cart Modal handlers
+            $('#cartBtn, #cartMobileBtn').on('click', function() {
+                $('#cartModal').removeClass('hidden').addClass('flex');
+            });
+
+            $('#closeCartModalBtn').on('click', function() {
+                $('#cartModal').removeClass('flex').addClass('hidden');
+            });
+
+            // Mobile menu handlers
+            $('#mobileMenuBtn').on('click', function() {
+                // To fix the issue, we toggle between 'hidden' and 'flex'
+                $('#mobileMenu').toggleClass('hidden');
+                $('#mobileMenu').toggleClass('translate-x-full');
+            });
+
+            $('#closeMobileMenuBtn').on('click', function() {
+                // To fix the issue, we toggle between 'hidden' and 'flex'
+                $('#mobileMenu').toggleClass('hidden');
+                $('#mobileMenu').toggleClass('translate-x-full');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وليد جولالي - مطور مواقع محترف</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- jQuery CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1F2937; /* Dark solid color background */
+            color: #E5E7EB; /* Light text color */
+        }
+        body, html {
+            direction: rtl;
+        }
+        .section {
+            padding-top: 5rem;
+            padding-bottom: 5rem;
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Dark Glassy effect */
+        .glassy-bg {
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Testimonials carousel styles */
+        .carousel-container {
+            perspective: 1000px;
+            overflow: hidden;
+            position: relative;
+            height: 350px;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-item {
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: scale(0.8) rotateY(45deg);
+            transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+            position: absolute;
+            left: 0;
+        }
+        .carousel-item.active {
+            opacity: 1;
+            transform: scale(1) rotateY(0deg);
+            position: relative;
+        }
+
+        /* Typing effect for testimonials */
+        .typing-text::after {
+            content: '|';
+            animation: blink-caret 0.75s step-end infinite;
+        }
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: currentColor; }
+        }
+        
+        /* New hero section background styling */
+        .hero-background {
+            position: relative;
+            background-image: url('default.png');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body class="text-gray-200">
+    <!-- رأس الصفحة - التنقل -->
+    <header class="fixed top-0 left-0 right-0 z-50 glassy-bg">
+        <nav class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#hero" class="text-2xl font-bold text-gray-100 transition-colors duration-300">وليد جولالي</a>
+            <div class="hidden md:flex items-center space-x-8 space-x-reverse">
+                <a href="#about" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">من أنا</a>
+                <a href="#services" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">خدماتي</a>
+                <a href="#projects" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">المشاريع</a>
+                <a href="#testimonials" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">آراء العملاء</a>
+                <a href="#contact" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">تواصل</a>
+            </div>
+            <button id="mobile-menu-btn" class="p-2 rounded-full md:hidden text-gray-100">
+                <i class="bi bi-list text-2xl"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-80 z-50 hidden flex-col items-center justify-center">
+        <button id="close-menu-btn" class="absolute top-6 right-6 p-2 rounded-full text-white">
+            <i class="bi bi-x-lg text-3xl"></i>
+        </button>
+        <nav class="flex flex-col items-center text-center space-y-8">
+            <a href="#about" class="text-white text-3xl font-bold hover:text-blue-400 transition-colors duration-300">من أنا</a>
+            <a href="#services" class="text-white text-3xl font-bold hover:text-blue-400 transition-colors duration-300">خدماتي</a>
+            <a href="#projects" class="text-white text-3xl font-bold hover:text-blue-400 transition-colors duration-300">المشاريع</a>
+            <a href="#testimonials" class="text-white text-3xl font-bold hover:text-blue-400 transition-colors duration-300">آراء العملاء</a>
+            <a href="#contact" class="text-white text-3xl font-bold hover:text-blue-400 transition-colors duration-300">تواصل</a>
+        </nav>
+    </div>
+
+    <main>
+        <!-- قسم البداية - Hero -->
+        <section id="hero" class="hero-background">
+            <div class="glassy-bg p-10 md:p-132 rounded-lg max-w-36x4 mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-blue-400 leading-tight mb-4">
+                    مرحباً بك! أنا وليد جولالي
+                </h1>
+                <p class="text-lg md:text-2xl text-gray-300 mb-8">
+                    مطور مواقع محترف بخبرة 3 سنوات في بناء حلول ويب متكاملة.
+                </p>
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse justify-center">
+                    <a href="#services" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">
+                        تصفح خدماتي
+                    </a>
+                    <a href="#contact" class="bg-transparent text-blue-400 font-bold py-3 px-8 rounded-full shadow-lg border border-blue-400 hover:bg-blue-800 hover:text-white transition-all duration-300 transform hover:scale-105">
+                        تواصل معي
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم من أنا - About Me -->
+        <section id="about" class="section glassy-bg mt-12 rounded-lg mx-auto max-w-7xl">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center text-blue-400 mb-12">من أنا</h2>
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pl-12 text-center md:text-right">
+                        <p class="text-lg text-gray-300 leading-relaxed mb-6">
+                            اسمي وليد جولالي، مطور مواقع متكامل بخبرة تزيد عن 3 سنوات في بناء وتطوير حلول ويب مبتكرة وفعالة.
+                            أمتلك شغفًا عميقًا بتحويل الأفكار إلى واقع رقمي ملموس، وقد عملت على أكثر من 30 مشروعًا متنوعًا،
+                            مما أكسبني خبرة واسعة في التعامل مع مختلف التحديات البرمجية.
+                        </p>
+                        <p class="text-lg text-gray-300 leading-relaxed mb-6">
+                            أجمع بين خبرة قوية في تطوير الواجهات الخلفية (Backend) والواجهات الأمامية (Frontend)، مما يمكنني من تقديم حلول
+                            كاملة وشاملة. أستخدم إطار عمل **Laravel** كأداة رئيسية في بناء المشاريع القوية والسريعة،
+                            بالإضافة إلى تقنيات حديثة أخرى مثل **React**, **Vue.js**, **Node.js** و**MySQL** و**MongoDB** لضمان
+                            أفضل أداء ومرونة.
+                        </p>
+                    </div>
+                    <div class="md:w-1/2 mt-10 md:mt-0 flex flex-wrap justify-center md:justify-start gap-6">
+                        <!-- Icons for technologies -->
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/laravel/laravel-icon.svg" alt="Laravel" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">Laravel</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg" alt="React" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">React</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/vuejs/vuejs-icon.svg" alt="Vue.js" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">Vue.js</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/nodejs/nodejs-icon.svg" alt="Node.js" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">Node.js</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/mysql/mysql-icon.svg" alt="MySQL" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">MySQL</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-white/10 glassy-bg w-32 h-32 text-gray-300 transform hover:scale-110 transition-transform duration-300">
+                            <img src="https://www.vectorlogo.zone/logos/mongodb/mongodb-icon.svg" alt="MongoDB" class="w-12 h-12 mb-2">
+                            <span class="text-sm font-semibold">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الخدمات - Services -->
+        <section id="services" class="section mt-12 rounded-lg mx-auto max-w-7xl">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center text-blue-400 mb-12">خدماتي</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- عرض 1: موقع شخصي -->
+                    <div class="card glassy-bg p-8 rounded-lg shadow-xl border border-gray-700 transition-all duration-300 transform hover:scale-105">
+                        <div class="flex justify-center mb-4">
+                           <i class="bi bi-person-fill text-blue-400 text-6xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">تطوير موقع شخصي</h3>
+                        <p class="text-gray-300 text-center mb-6">
+                            بناء موقع شخصي احترافي لعرض أعمالك، سيرتك الذاتية، وخدماتك. مثالي للفنانين، الكتاب، والمحترفين.
+                        </p>
+                        <ul class="space-y-2 mb-6 text-gray-300">
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>تصميم متجاوب على جميع الأجهزة.</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>معرض أعمال (Portfolio).</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>صفحة تواصل احترافية.</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <span class="text-4xl font-extrabold text-blue-400"><span style="font-size: 17px;">79%-</span>/699 د.م</span>
+                            <span class="text-lg text-gray-500"> (تقريبي)</span>
+                        </div>
+                    </div>
+
+                    <!-- عرض 2: موقع تجاري متكامل -->
+                    <div class="card glassy-bg p-8 rounded-lg shadow-xl border border-gray-700 transition-all duration-300 transform hover:scale-105">
+                        <div class="flex justify-center mb-4">
+                           <i class="bi bi-shop-window text-blue-400 text-6xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">تطوير موقع تجاري متكامل</h3>
+                        <p class="text-gray-300 text-center mb-6">
+                            إنشاء متجر إلكتروني شامل بواجهة مستخدم جذابة ولوحة تحكم قوية لإدارة المنتجات والطلبات.
+                        </p>
+                        <ul class="space-y-2 mb-6 text-gray-300">
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>لوحة تحكم إدارية.</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>نظام سلة تسوق آمن.</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>بوابات دفع إلكتروني.</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <span class="text-4xl font-extrabold text-blue-400"><span style="font-size: 17px;">40%-</span>/1100 د.م</span>
+                            <span class="text-lg text-gray-500"> (تقريبي)</span>
+                        </div>
+                    </div>
+
+                    <!-- عرض 3: صيانة وتطوير المواقع -->
+                    <div class="card glassy-bg p-8 rounded-lg shadow-xl border border-gray-700 transition-all duration-300 transform hover:scale-105">
+                        <div class="flex justify-center mb-4">
+                           <i class="bi bi-tools text-blue-400 text-6xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-center mb-4 text-gray-100">صيانة وتطوير المواقع</h3>
+                        <p class="text-gray-300 text-center mb-6">
+                            دعم فني مستمر وتطوير لموقعك الحالي. تأكد من أن موقعك آمن، سريع، ومواكب لأحدث التقنيات.
+                        </p>
+                        <ul class="space-y-2 mb-6 text-gray-300">
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>تحديثات أمنية دورية.</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>تحسين الأداء.</span>
+                            </li>
+                            <li class="flex items-center space-x-2 space-x-reverse">
+                                <i class="bi bi-check-circle-fill text-green-500 text-lg"></i>
+                                <span>إضافة ميزات جديدة.</span>
+                            </li>
+                        </ul>
+                        <div class="text-center">
+                            <span class="text-4xl font-extrabold text-blue-400"><span style="font-size: 17px;">88%-</span>/569 د.م</span>
+                            <span class="text-lg text-gray-500"> (شهرياً)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم المشاريع -->
+        <section id="projects" class="section glassy-bg mt-12 rounded-lg mx-auto max-w-7xl">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center text-blue-400 mb-12">أعمالي</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    <!-- مشروع 1 -->
+                    <a href="1.html" target="_blank" class="block group">
+                        <div class="rounded-lg overflow-hidden shadow-xl transform transition-all duration-300 group-hover:scale-105">
+                            <img src="2.jpg" alt="Project 1" class="w-full h-48 object-cover">
+                            <div class="p-6 glassy-bg">
+                                <h3 class="text-xl font-bold mb-2 text-gray-100 group-hover:text-blue-400">Advanced Store Online</h3>
+                                <p class="text-gray-300 text-sm">
+                                    متجر إلكتروني بواجهة جذابة ووضع مظلم مع روبوت محادثة لي توجيه العملاء والإجابة على أسئلة العملاء
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- مشروع 2 -->
+                    <a href="2.html" target="_blank" class="block group">
+                        <div class="rounded-lg overflow-hidden shadow-xl transform transition-all duration-300 group-hover:scale-105">
+                            <img src="1.jpg" alt="Project 2" class="w-full h-48 object-cover">
+                            <div class="p-6 glassy-bg">
+                                <h3 class="text-xl font-bold mb-2 text-gray-100 group-hover:text-blue-400">Simple Store Online</h3>
+                                <p class="text-gray-300 text-sm">
+                                    متجر بسيط ورخيص وجميل ومميزات جميلة وبسيطة
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم آراء العملاء -->
+        <section id="testimonials" class="section glassy-bg mt-12 rounded-lg mx-auto max-w-7xl">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center text-blue-400 mb-12">آراء العملاء</h2>
+                <div class="relative p-6 rounded-lg">
+                    <div class="carousel-container">
+                        <div id="testimonials-track" class="carousel-track">
+                            <!-- Testimonials will be injected here by JavaScript -->
+                        </div>
+                    </div>
+                    <!-- Navigation Buttons -->
+                    <button id="prev-btn" class="absolute top-1/2 -right-4 md:-right-8 transform -translate-y-1/2 p-3 rounded-full glassy-bg shadow-lg text-gray-200 hover:bg-gray-800 transition-colors duration-300 z-10">
+                        <i class="bi bi-chevron-right text-2xl"></i>
+                    </button>
+                    <button id="next-btn" class="absolute top-1/2 -left-4 md:-left-8 transform -translate-y-1/2 p-3 rounded-full glassy-bg shadow-lg text-gray-200 hover:bg-gray-800 transition-colors duration-300 z-10">
+                        <i class="bi bi-chevron-left text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم التواصل - Contact -->
+        <section id="contact" class="section glassy-bg mt-12 rounded-lg mx-auto max-w-7xl">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center text-blue-400 mb-12">تواصل معي</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-16 md:space-x-reverse">
+                    <!-- Social Media Links -->
+                    <div class="flex items-center space-x-6 space-x-reverse">
+                        <a href="https://wa.me/212703487258" target="_blank" class="text-5xl text-gray-300 hover:text-green-500 transition-colors duration-300">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="https://github.com/altoidman" target="_blank" class="text-5xl text-gray-300 hover:text-gray-100 transition-colors duration-300">
+                            <i class="bi bi-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/iorrent-up-a15089386/" target="_blank" class="text-5xl text-gray-300 hover:text-blue-500 transition-colors duration-300">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Newsletter Form -->
+                <div class="mt-12 max-w-xl mx-auto text-center p-8 glassy-bg rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-100">اشترك في قائمتنا البريدية</h3>
+                    <p class="text-gray-300 mb-6">
+                        ابق على اطلاع بأحدث أخباري، مشاريعي، والتقنيات التي أعمل عليها.
+                    </p>
+                    <form id="subscribe-form" class="flex flex-col md:flex-row gap-4">
+                        <input type="email" placeholder="أدخل بريدك الإلكتروني..." class="flex-grow p-3 rounded-md border border-gray-700 bg-gray-900 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300" required>
+                        <button type="submit" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-md shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">
+                            اشترك الآن
+                        </button>
+                    </form>
+                    <div id="message-box" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- نهاية الصفحة - Footer -->
+    <footer class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto px-6 text-center text-sm">
+            &copy; 2024 وليد جولالي. جميع الحقوق محفوظة.
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Smooth scrolling for navigation links
+            $('a[href^="#"]').on('click', function(event) {
+                event.preventDefault();
+                $('#mobile-menu').fadeOut();
+                $('html, body').animate({
+                    scrollTop: $($.attr(this, 'href')).offset().top - 80
+                }, 500);
+            });
+
+            // Handle form submission with a custom message box
+            $('#subscribe-form').on('submit', function(event) {
+                event.preventDefault();
+                const messageBox = $('#message-box');
+                messageBox.removeClass().addClass('mt-4 p-3 rounded-md text-sm bg-green-200 text-green-800').text('شكراً لاشتراكك! هذه مجرد نسخة تجريبية.').show();
+                setTimeout(() => messageBox.fadeOut(), 5000);
+            });
+
+            // Mobile menu functionality
+            $('#mobile-menu-btn').on('click', function() {
+                $('#mobile-menu').fadeIn();
+            });
+
+            $('#close-menu-btn').on('click', function() {
+                $('#mobile-menu').fadeOut();
+            });
+
+            // Testimonials data and carousel logic
+            const testimonials = [
+                { name: "أحمد بن محمد", date: "15/05/2024", rating: 5, comment: "تجربة عمل ممتازة مع وليد! محترف جداً وسريع في الإنجاز. أنصح به بشدة." },
+                { name: "فاطمة الزهراء", date: "22/04/2024", rating: 5, comment: "خدمة رائعة وتواصل مستمر. فهم متطلبات المشروع بدقة وقدم نتائج تفوق التوقعات." },
+                { name: "يوسف العلوي", date: "10/03/2024", rating: 4, comment: "عمل متقن وتفاصيل دقيقة. كان هناك تأخير بسيط ولكن الجودة النهائية كانت عالية جداً." },
+                { name: "زينب الغزالي", date: "01/03/2024", rating: 5, comment: "وليد يتمتع بمهنية عالية ومعرفة واسعة. حل جميع المشاكل التقنية بكفاءة." },
+                { name: "علي الخولي", date: "28/02/2024", rating: 4, comment: "موقع جميل جداً، لمسة إبداعية في التصميم. استغرق وقتاً أطول قليلاً مما توقعنا." },
+                { name: "سارة الفاسي", date: "18/02/2024", rating: 5, comment: "سرعة في الاستجابة وجودة في العمل. تجربة ممتازة من البداية للنهاية." },
+                { name: "محمد العمري", date: "05/02/2024", rating: 5, comment: "أنصح بالتعامل مع وليد، فهو يمتلك خبرة كبيرة ويقدم استشارات قيمة." },
+                { name: "هند الكوهن", date: "29/01/2024", rating: 5, comment: "أكثر من رائع! فهم عميق للمتطلبات وأداء متميز. شكراً جزيلاً." },
+                { name: "عمر اليازيدي", date: "17/01/2024", rating: 4, comment: "عمل جيد، خاصة في الواجهة الخلفية. يمكن تحسين بعض التفاصيل في الواجهة الأمامية." },
+                { name: "خديجة السعدي", date: "08/01/2024", rating: 5, comment: "مطور مبدع ومحترف، أنجز لي موقع أحلامي في وقت قياسي." },
+                { name: "رضوان الشامي", date: "28/12/2023", rating: 5, comment: "تعامل سلس ونتيجة نهائية ممتازة. كان من دواعي سروري العمل معه." },
+                { name: "ليلى الحسني", date: "19/12/2023", rating: 5, comment: "يستحق كل نجمة، عمل متكامل وخدمة عملاء فوق الممتازة." },
+                { name: "رشيد زواكي", date: "10/12/2023", rating: 4, comment: "خدمة جيدة جداً، معالجة ممتازة للأخطاء التقنية التي ظهرت." },
+                { name: "مريم بلقاسم", date: "01/12/2023", rating: 5, comment: "شخص موثوق وذو خبرة عالية. أعتبره شريكي في المشاريع المستقبلية." },
+                { name: "جمال المكي", date: "20/11/2023", rating: 5, comment: "مطور ماهر، قدم لي حلولًا مبتكرة لم أتوقعها." },
+                { name: "سلمى الطاهري", date: "12/11/2023", rating: 5, comment: "عمل احترافي بكل المقاييس، من التصميم إلى التنفيذ." },
+                { name: "هشام الخياطي", date: "04/11/2023", rating: 5, comment: "أنصح به لكل من يبحث عن الجودة والاحترافية." },
+                { name: "نسرين القادري", date: "25/10/2023", rating: 4, comment: "تجربة إيجابية، حل المشكلة التي واجهتني بسرعة." },
+                { name: "عمران بن ناصر", date: "15/10/2023", rating: 5, comment: "محترف بمعنى الكلمة. كان من السهل التواصل معه وفهم رؤيتي." },
+                { name: "حنان السباعي", date: "05/10/2023", rating: 5, comment: "عمل رائع وموقع سريع ومؤمن. شكراً لك." },
+                { name: "يونس المرابط", date: "28/09/2023", rating: 5, comment: "جودة عالية في البرمجة والتصميم. سعيد جداً بالنتيجة." },
+                { name: "غيثة الصفريوي", date: "20/09/2023", rating: 4, comment: "خدمة جيدة، استلمت الموقع في الوقت المحدد." },
+                { name: "نور الدين الفيلالي", date: "10/09/2023", rating: 5, comment: "مطور ممتاز ومحترم جداً. أنصح بالتعامل معه." },
+                { name: "كريمة الريفي", date: "01/09/2023", rating: 5, comment: "تفوق على توقعاتي، كل شيء يعمل بسلاسة." },
+                { name: "عبد الله البوعناني", date: "22/08/2023", rating: 5, comment: "عمل رائع. تصميم الموقع كان بالضبط ما تخيلته." },
+                { name: "سناء الزموري", date: "15/08/2023", rating: 5, comment: "أنصح به، يمتلك مهارات فريدة في التعامل مع التفاصيل." },
+                { name: "محمود الشرايبي", date: "07/08/2023", rating: 4, comment: "شخص موهوب جداً، ولكن كان التواصل يحتاج إلى تحسين بسيط." },
+                { name: "فوزية بن صالح", date: "30/07/2023", rating: 5, comment: "خدمة احترافية جداً. سعيد جداً بالموقع الجديد." },
+                { name: "طارق بناني", date: "20/07/2023", rating: 5, comment: "مطور سريع ويفهم احتياجات العميل من أول مرة." },
+                { name: "مريم العلمي", date: "10/07/2023", rating: 5, comment: "أثبت جدارته في كل مرحلة من مراحل المشروع." },
+            ];
+            
+            let currentIndex = 0;
+            const carouselTrack = document.getElementById('testimonials-track');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            // Function to render all testimonials as carousel items
+            const renderTestimonials = () => {
+                carouselTrack.innerHTML = ''; // Clear previous content
+                testimonials.forEach((item, index) => {
+                    const stars = '<i class="bi bi-star-fill text-yellow-400"></i>'.repeat(item.rating) +
+                                  '<i class="bi bi-star text-gray-400"></i>'.repeat(5 - item.rating);
+                    const testimonialHtml = `
+                        <div class="carousel-item p-4">
+                            <div class="card glassy-bg rounded-lg shadow-md p-6 h-full border border-gray-700 mx-auto max-w-lg">
+                                <div class="flex items-center space-x-2 space-x-reverse mb-4">
+                                    ${stars}
+                                </div>
+                                <p class="text-gray-300 leading-relaxed mb-4 testimonial-comment" data-full-text="${item.comment}"></p>
+                                <p class="font-bold text-gray-100">${item.name}</p>
+                                <p class="text-sm text-gray-400">${item.date}</p>
+                            </div>
+                        </div>
+                    `;
+                    carouselTrack.innerHTML += testimonialHtml;
+                });
+            };
+
+            // Function to show the current testimonial with a typing effect
+            const showCurrentTestimonial = () => {
+                const items = document.querySelectorAll('.carousel-item');
+                items.forEach(item => {
+                    item.classList.remove('active');
+                    item.style.zIndex = 0;
+                });
+
+                const currentItem = items[currentIndex];
+                currentItem.classList.add('active');
+                currentItem.style.zIndex = 1;
+
+                const commentElement = currentItem.querySelector('.testimonial-comment');
+                commentElement.textContent = '';
+                commentElement.classList.add('typing-text');
+                const fullText = commentElement.getAttribute('data-full-text');
+                let charIndex = 0;
+
+                const typingInterval = setInterval(() => {
+                    if (charIndex < fullText.length) {
+                        commentElement.textContent += fullText.charAt(charIndex);
+                        charIndex++;
+                    } else {
+                        clearInterval(typingInterval);
+                        commentElement.classList.remove('typing-text');
+                    }
+                }, 20);
+            };
+
+            // Function to handle navigation to the next testimonial
+            const nextTestimonial = () => {
+                currentIndex = (currentIndex + 1) % testimonials.length;
+                showCurrentTestimonial();
+            };
+
+            // Function to handle navigation to the previous testimonial
+            const prevTestimonial = () => {
+                currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+                showCurrentTestimonial();
+            };
+
+            // Event listeners for navigation buttons
+            nextBtn.addEventListener('click', nextTestimonial);
+            prevBtn.addEventListener('click', prevTestimonial);
+
+            // Initial render and display
+            renderTestimonials();
+            showCurrentTestimonial();
+        });
+    </script>
+</body>
+</html>
